@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"package": "com.mg3dp.birdsineverybiome.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"AvatarRendererMixin",
+		"AvatarRenderStateMixin",
+		"ParrotOnShoulderLayerMixin",
+		"ParrotRendererMixin",
+		"ParrotRenderStateMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

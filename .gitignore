@@ -1,0 +1,53 @@
+# gradle
+
+.gradle/
+build/
+out/
+classes/
+
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# macos
+
+*.DS_Store
+
+# fabric
+
+run/
+
+# java
+
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+
+# local build scratch
+
+build.log
+build-run.log
+tasks.txt
+
+# extracted Mojang assets and generated previews - do not redistribute or ship
+
+tools/vanilla/
+tools/preview.png
+tools/texture-guide.png
+

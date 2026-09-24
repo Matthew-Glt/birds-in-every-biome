@@ -1,0 +1,21 @@
+{
+  "slug": "birds-in-every-biome",
+  "title": "Birds in Every Biome",
+  "description": "Parrots spawn in every biome, and some biomes hatch their own colour variant. Includes a spawn config, flock spawning so you actually see birds, and /birds diagnostics.",
+  "project_type": "mod",
+  "categories": ["mobs", "game-mechanics"],
+  "additional_categories": ["adventure", "utility"],
+  "license_id": "MIT",
+  "loaders": ["fabric"],
+  "game_versions": ["26.2"],
+  "environment": "client_and_server",
+  "source_url": "https://github.com/Matthew-Glt/birds-in-every-biome",
+  "issues_url": "https://github.com/Matthew-Glt/birds-in-every-biome/issues",
+  "wiki_url": "https://github.com/Matthew-Glt/birds-in-every-biome/blob/main/docs/TECHNICAL.md",
+  "icon": "src/main/resources/assets/birdsineverybiome/icon.png",
+  "body_file": "docs/modrinth/body.md",
+  "changelog_file": "docs/release-notes/1.3.0.md",
+  "required_projects": ["fabric-api"],
+  "jar": "build/libs/birds-in-every-biome-1.3.0.jar",
+  "sources_jar": "build/libs/birds-in-every-biome-1.3.0-sources.jar"
+}

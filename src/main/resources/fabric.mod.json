@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "birdsineverybiome",
+	"version": "${version}",
+	"name": "Birds in Every Biome",
+	"description": "Parrots spawn in every biome, and some biomes hatch their own colour variant.",
+	"authors": [
+		"Matthew"
+	],
+	"license": "MIT",
+	"icon": "assets/birdsineverybiome/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.mg3dp.birdsineverybiome.BirdsInEveryBiome"
+		],
+		"modmenu": [
+			"com.mg3dp.birdsineverybiome.client.BirdsModMenu"
+		]
+	},
+	"mixins": [
+		"birdsineverybiome.mixins.json",
+		{
+			"config": "birdsineverybiome.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": ">=26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}
