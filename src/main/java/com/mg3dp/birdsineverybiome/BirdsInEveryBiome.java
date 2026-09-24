@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityTypes;
@@ -24,10 +23,15 @@ public class BirdsInEveryBiome implements ModInitializer {
 		BirdsConfig config = BirdsConfig.load();
 
 		// Add a parrot spawn entry to every biome that does not already have one.
-		// Jungles are skipped by default because vanilla already spawns parrots there.
-		Predicate<BiomeSelectionContext> selector = config.skipJungles
-				? context -> !context.hasTag(BiomeTags.IS_JUNGLE)
-				: BiomeSelectors.all();
+		// Jungles are skipped by default because vanilla already spawns parrots there, and biomes
+		// switched off in the config screen get no entry at all.
+		Predicate<BiomeSelectionContext> selector = context -> {
+			if (config.skipJungles && context.hasTag(BiomeTags.IS_JUNGLE)) {
+				return false;
+			}
+
+			return config.isBiomeAllowed(context.getBiomeKey());
+		};
 
 		BiomeModifications.addSpawn(
 				selector,

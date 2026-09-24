@@ -14,8 +14,8 @@
   "wiki_url": "https://github.com/Matthew-Glt/birds-in-every-biome/blob/main/docs/TECHNICAL.md",
   "icon": "src/main/resources/assets/birdsineverybiome/icon.png",
   "body_file": "docs/modrinth/body.md",
-  "changelog_file": "docs/release-notes/1.3.0.md",
+  "changelog_file": "docs/release-notes/1.4.0.md",
   "required_projects": ["fabric-api"],
-  "jar": "build/libs/birds-in-every-biome-1.3.0.jar",
-  "sources_jar": "build/libs/birds-in-every-biome-1.3.0-sources.jar"
+  "jar": "build/libs/birds-in-every-biome-1.4.0.jar",
+  "sources_jar": "build/libs/birds-in-every-biome-1.4.0-sources.jar"
 }

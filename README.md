@@ -50,6 +50,9 @@ saved with it forever.
   parrot, on every client, including in someone else's game.
 - **A config file, not a rebuild.** Spawn weight, group size, flock timing and both toggles live in
   `config/birds-in-every-biome.json`. Edit it and restart the game.
+- **Per-biome control.** Every biome has an on/off toggle in the config screen (or an entry in
+  `disabledBiomes`), so birds can be kept out of oceans, deserts, or anywhere else — both the natural
+  spawn entry and the flocks respect it.
 - **A spawner that actually fires.** Vanilla's passive spawner is throttled and cap-limited, so a
   spawn entry alone changes nothing in an explored world. The mod ships an independent flock spawner
   that drops small groups of parrots near players, using the same rules as the natural entry.
@@ -108,7 +111,8 @@ steps — see [`docs/TECHNICAL.md`](docs/TECHNICAL.md#adding-a-biome-skin).
   "skipJungles": true,
   "flockEnabled": true,
   "flockDelaySeconds": 30,
-  "maxBirdsNearby": 8
+  "maxBirdsNearby": 8,
+  "disabledBiomes": []
 }
 ```
 
@@ -121,6 +125,7 @@ steps — see [`docs/TECHNICAL.md`](docs/TECHNICAL.md#adding-a-biome-skin).
 | `flockEnabled` | `true` | on/off | Turn the independent flock spawner off if you want vanilla-only spawning. |
 | `flockDelaySeconds` | `30` | 5–300 | Seconds between flock attempts, per player. Lower = more birds. |
 | `maxBirdsNearby` | `8` | 1–32 | Stop adding flocks while this many parrots are already within 64 blocks of a player. |
+| `disabledBiomes` | `[]` | — | Biome ids parrots may not spawn in, e.g. `["minecraft:ocean", "minecraft:desert"]`. Empty means every biome is allowed. The config screen has a toggle for each biome. |
 
 Values are clamped on load: `spawnWeight ≥ 0`, `minGroupSize ≥ 1`,
 `maxGroupSize ≥ minGroupSize`, `flockDelaySeconds ≥ 5`, `maxBirdsNearby ≥ 1`. A config that can't be
@@ -133,8 +138,13 @@ Config**. Sliders for spawn weight, group sizes, flock timing and both toggles, 
 **Cancel** and **Restore defaults**. The screen is built from plain vanilla widgets, so Cloth Config
 is not needed.
 
-Spawn-rate changes apply **the next time the world loads**: biome spawn lists are baked at world load,
-so restart the world or the game after saving.
+**Biome toggles** opens a second page: one on/off switch per biome, seven per page, with **Enable
+all** / **Disable all** and **Back**. The switch shows whether parrots may spawn in that biome — turn
+one off and both the natural spawn entry and the flock spawner skip it. The page also shows every
+biome the loaded world knows about, so datapack and modded biomes appear there too.
+
+Spawn-rate and biome changes apply **the next time the world loads**: biome spawn lists are baked at
+world load, so restart the world or the game after saving.
 
 ## Why a high spawn weight alone does nothing
 
@@ -185,6 +195,7 @@ Example:
 Birds in Every Biome - position check at 118, 64, -232
   biome: minecraft:desert
   skin a parrot would get here: arid
+  spawning enabled in this biome: yes
   natural spawn entry: weight 4
   spawn rules here: ok (light 15)
   parrots within 64 blocks: 2 (flock limit 8)
@@ -251,7 +262,7 @@ The build also produces a `-sources.jar`, and embeds `LICENSE` into the mod jar.
   `finalizeSpawn` assign their skin.
 - `BirdsCommand` — `/birds check` and `/birds spawn`.
 - `BirdsConfig` — reads and writes `config/birds-in-every-biome.json` with Gson (no extra
-  dependency), including migration of legacy config file names.
+  dependency), including migration of legacy config file names and the per-biome allow list.
 - Client mixins — `ParrotRendererMixin` and `ParrotOnShoulderLayerMixin` swap the texture in
   `getTextureLocation` / the shoulder layer's variant lookup, reading the skin out of the render
   state. `AvatarRendererMixin`, `AvatarRenderStateMixin` and `PlayerMixin` carry the shoulder parrot's

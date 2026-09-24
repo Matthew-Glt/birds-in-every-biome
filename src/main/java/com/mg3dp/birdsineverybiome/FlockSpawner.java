@@ -66,6 +66,12 @@ public final class FlockSpawner {
 			return new Attempt(false, "spot " + spot.toShortString() + " is a jungle");
 		}
 
+		String biomeName = level.getBiome(spot).getRegisteredName();
+
+		if (!config.isBiomeAllowed(biomeName)) {
+			return new Attempt(false, "biome " + biomeName + " is switched off in the config");
+		}
+
 		ParrotSpawnRules.Denial denial = ParrotSpawnRules.check(EntityTypes.PARROT, level, EntitySpawnReason.NATURAL, spot, random);
 
 		if (denial != ParrotSpawnRules.Denial.OK) {

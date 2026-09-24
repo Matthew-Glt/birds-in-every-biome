@@ -52,3 +52,6 @@ tools/vanilla/
 tools/preview.png
 tools/texture-guide.png
 
+# third-party jars are pulled from maven, not vendored here
+
+libs/

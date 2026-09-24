@@ -3,11 +3,16 @@ package com.mg3dp.birdsineverybiome;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
 
 /**
  * config/birds-in-every-biome.json - edit it and restart the game, no rebuild needed.
@@ -26,6 +31,8 @@ public final class BirdsConfig {
 	public int flockDelaySeconds = 30;
 	/** Stop adding flocks while this many parrots are already within 64 blocks of a player. */
 	public int maxBirdsNearby = 8;
+	/** Biome ids parrots may not spawn in, e.g. "minecraft:ocean". Empty means every biome. */
+	public List<String> disabledBiomes = new ArrayList<>();
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -57,6 +64,57 @@ public final class BirdsConfig {
 		this.flockEnabled = defaults.flockEnabled;
 		this.flockDelaySeconds = defaults.flockDelaySeconds;
 		this.maxBirdsNearby = defaults.maxBirdsNearby;
+		this.disabledBiomes = new ArrayList<>();
+	}
+
+	// ---------------------------------------------------------------- per-biome toggles
+
+	/** May parrots spawn in this biome? Unknown ids are allowed, so new biomes opt in by default. */
+	public boolean isBiomeAllowed(String biomeId) {
+		return biomeId == null || !this.disabledBiomes.contains(biomeId);
+	}
+
+	public boolean isBiomeAllowed(ResourceKey<Biome> biomeKey) {
+		return biomeKey == null || isBiomeAllowed(biomeKey.identifier().toString());
+	}
+
+	/** Called by the config screen for each biome toggle. */
+	public void setBiomeAllowed(String biomeId, boolean allowed) {
+		if (allowed) {
+			this.disabledBiomes.remove(biomeId);
+		} else if (!this.disabledBiomes.contains(biomeId)) {
+			this.disabledBiomes.add(biomeId);
+		}
+	}
+
+	/** Normalises the biome list: no nulls, no duplicates, sorted so the file stays readable. */
+	private void normaliseBiomes() {
+		if (this.disabledBiomes == null) {
+			this.disabledBiomes = new ArrayList<>();
+			return;
+		}
+
+		List<String> cleaned = new ArrayList<>(new LinkedHashSet<>(this.disabledBiomes));
+
+		for (int i = 0; i < cleaned.size(); i++) {
+			String id = cleaned.get(i);
+
+			if (id == null || id.isBlank()) {
+				cleaned.remove(i--);
+				continue;
+			}
+
+			String trimmed = id.trim();
+
+			if (!trimmed.contains(":")) {
+				trimmed = "minecraft:" + trimmed;
+			}
+
+			cleaned.set(i, trimmed);
+		}
+
+		cleaned.sort(String::compareTo);
+		this.disabledBiomes = cleaned;
 	}
 
 	public static BirdsConfig load() {
@@ -93,6 +151,7 @@ public final class BirdsConfig {
 		config.maxGroupSize = Math.max(config.minGroupSize, config.maxGroupSize);
 		config.flockDelaySeconds = Math.max(5, config.flockDelaySeconds);
 		config.maxBirdsNearby = Math.max(1, config.maxBirdsNearby);
+		config.normaliseBiomes();
 		return config;
 	}
 }

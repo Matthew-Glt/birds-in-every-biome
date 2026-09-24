@@ -11,7 +11,7 @@ and where to extend it. Everything below is written against the source in this r
 | File | Role |
 |---|---|
 | `BirdsInEveryBiome` | `ModInitializer`. Loads config, registers the biome spawn entry, the flock spawner and the command. |
-| `BirdsConfig` | Plain Gson config object for `config/birds-in-every-biome.json` (load/save/defaults/clamping/legacy migration). |
+| `BirdsConfig` | Plain Gson config object for `config/birds-in-every-biome.json` (load/save/defaults/clamping/legacy migration, per-biome allow list). |
 | `ParrotSkins` | The biome → skin table: `SKIN_NAMES`, `RULES`, `skinFor(biome)`, `texture(index)`. |
 | `ParrotSpawnRules` | The relaxed spawn check plus the `Denial` enum used by `/birds`. |
 | `FlockSpawner` | Server-tick hook that drops flocks near players and reports a human-readable `Attempt` result. |
@@ -26,7 +26,8 @@ and where to extend it. Everything below is written against the source in this r
 | `client/mixin/ParrotRendererMixin` | Copies the skin into the parrot render state, swaps the texture. |
 | `client/mixin/ParrotOnShoulderLayerMixin` | Draws the shoulder parrot with its biome texture. |
 | `client/mixin/AvatarRendererMixin`, `AvatarRenderStateMixin` | Carry shoulder skins from player entity → avatar render state. |
-| `client/BirdsConfigScreen` | Mod Menu config screen, built purely from vanilla widgets. |
+| `client/BirdsConfigScreen` | Mod Menu config screen, built purely from vanilla widgets. Page 1 is the spawn settings, page 2 is a toggle per biome. |
+| `client/VanillaBiomes` | The vanilla biome ids for the target Minecraft version, so the biome page works at the main menu (biomes are a dynamic registry). |
 | `client/BirdsModMenu` | `ModMenuApi` entrypoint; only loaded when Mod Menu is present. |
 
 Mixins are declared in `birdsineverybiome.mixins.json` (common) and
@@ -167,6 +168,35 @@ Vanilla puts a parrot on a player's shoulder by deleting the parrot entity and s
   `ParrotSkins.texture(skin)`, anything else falls through to vanilla's variant texture — so vanilla
   parrots look exactly as they always did.
 
+## Per-biome toggles
+
+`BirdsConfig.disabledBiomes` is a sorted list of biome ids that parrots may not spawn in. Empty means
+every biome is allowed, and **unknown ids are allowed**, so a biome added by a future Minecraft
+version or a datapack opts in by default. `load()` normalises the list (no nulls or duplicates,
+`minecraft:` prefix added when missing, sorted) so a hand-edited file stays tidy.
+
+Two call sites consume it, plus one reporter:
+
+- **The natural entry.** The `BiomeModifications.addSpawn` selector asks
+  `config.isBiomeAllowed(context.getBiomeKey())` for every biome, alongside the jungle rule. Because
+  the spawn list is built at world load, a change needs a world reload.
+- **The flock spawner.** `FlockSpawner.attempt` resolves the spot's biome with
+  `level.getBiome(spot).getRegisteredName()` and refuses the attempt with
+  `"biome <id> is switched off in the config"`. This check is per *spot*, so a flock can still be
+  placed in a neighbouring enabled biome when the origin is in a disabled one.
+- **`/birds check`** prints `spawning enabled in this biome: yes` or
+  `no (switched off in the config)`.
+
+The config screen's second page renders `BIOMES_PER_PAGE` (7) `CycleButton` toggles per page with
+paging, Enable all / Disable all and Back. The biome list is
+`VanillaBiomes.IDS` merged with the live registry (`minecraft.level.registryAccess().lookupOrThrow(Registries.BIOME)`)
+when a world is loaded, plus anything already in `disabledBiomes` — so a biome that is switched off
+can always be switched back on, even if it is not present in the current world.
+
+`VanillaBiomes` exists because biomes are a **dynamic** registry: at the main menu the client has no
+biome registry at all (`BuiltInRegistries` has no `BIOME` entry in 26.2), so a hardcoded list of the
+vanilla ids is the only way to offer the toggles before a world is loaded.
+
 ## Config file
 
 `config/birds-in-every-biome.json` is written on first launch (Gson with pretty printing — no extra
@@ -235,6 +265,12 @@ still compiles, and the game reports the failure when it loads. Read the log, no
    `environment: client`), so a server-only install spawns parrots and assigns skins correctly;
    only the rendering differs. Server-side testing can pin `/birds check` output but cannot exercise
    GPU-side texture swapping — that has to be observed in the client.
+
+The spawn logic is all server side, so it can be exercised headlessly: start the dev server, enable
+RCON in `run/server.properties`, and drive `/birds check` and `/birds spawn` from an RCON client
+(`/execute positioned <x> <y> <z> run birds check` reaches any biome, and
+`/locate biome minecraft:plains` finds a test spot). The config screen itself is client-only and has
+to be looked at.
 
 Textures can be iterated without rebuilding by using a resource pack that overrides
 `assets/birdsineverybiome/...` and pressing **F3+T** — see

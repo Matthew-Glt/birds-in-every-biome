@@ -35,6 +35,9 @@ of their own. The variant is rolled once, when the parrot spawns, and then saved
 - **Everything is configurable** without rebuilding: spawn weight, group sizes, jungle handling,
   flock timing and a nearby-bird cap, in `config/birds-in-every-biome.json` or from the Mod Menu
   config screen.
+- **A toggle for every biome.** The config screen's **Biome toggles** page switches spawning on or
+  off per biome — both the natural spawn entry and the flocks respect it. Every biome the loaded
+  world knows about is listed, including datapack and modded ones.
 - **Diagnostics built in** — `/birds check` explains why a bird would or wouldn't spawn where you are
   standing, and `/birds spawn` forces one attempt and reports exactly what happened.
 - **Vanilla clients keep working** on a modded server: they simply draw the normal five parrot
@@ -74,7 +77,8 @@ textures. Nothing breaks if only one side has it.
   "skipJungles": true,
   "flockEnabled": true,
   "flockDelaySeconds": 30,
-  "maxBirdsNearby": 8
+  "maxBirdsNearby": 8,
+  "disabledBiomes": []
 }
 ```
 
@@ -86,12 +90,15 @@ textures. Nothing breaks if only one side has it.
 | `flockEnabled` | `true` | Turn the independent flock spawner off for vanilla-only spawning. |
 | `flockDelaySeconds` | `30` | Seconds between flock attempts, per player. |
 | `maxBirdsNearby` | `8` | Stop adding flocks while this many parrots are already within 64 blocks of a player. |
+| `disabledBiomes` | `[]` | Biome ids parrots may not spawn in, e.g. `["minecraft:ocean", "minecraft:desert"]`. Empty means every biome is allowed. |
 
 Values are clamped on load, and a broken file falls back to defaults instead of crashing.
 Spawn-rate changes apply the next time a world loads — biome spawn lists are built at world load.
 
 **With Mod Menu**, the config screen gives you sliders for all of it plus **Save**, **Cancel** and
-**Restore defaults**. It is built from vanilla widgets, so Cloth Config is not required.
+**Restore defaults**, and a **Biome toggles** page with an on/off switch per biome (seven per page,
+plus **Enable all** / **Disable all**). It is built from vanilla widgets, so Cloth Config is not
+required.
 
 ## Why a high spawn weight alone does nothing
 
@@ -117,8 +124,9 @@ the bird population you will actually notice while playing.
 `/birds` needs gamemaster permission (level 2) and works in single-player, from a server console and
 in command blocks.
 
-- **`/birds check`** — biome, the skin a parrot would get there, whether the spawn rules pass at your
-  feet (and the light level), how many parrots are nearby, and the state of the flock spawner.
+- **`/birds check`** — biome, the skin a parrot would get there, whether spawning is enabled in that
+  biome, whether the spawn rules pass at your feet (and the light level), how many parrots are
+  nearby, and the state of the flock spawner.
 - **`/birds spawn`** — forces one flock attempt immediately and reports the outcome ("spawned 2
   parrot(s) at 118, 64, -232 (minecraft:desert)" or the exact reason it failed).
 

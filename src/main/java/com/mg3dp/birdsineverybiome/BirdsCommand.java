@@ -40,6 +40,10 @@ public final class BirdsCommand {
 				String report = "Birds in Every Biome - position check at " + pos.toShortString() + "\n"
 						+ "  biome: " + level.getBiome(pos).getRegisteredName() + (jungle ? " (jungle)" : "") + "\n"
 						+ "  skin a parrot would get here: " + ParrotSkins.skinFor(level.getBiome(pos)) + "\n"
+						+ "  spawning enabled in this biome: "
+						+ (config.isBiomeAllowed(level.getBiome(pos).getRegisteredName()) ? "yes"
+								: "no (switched off in the config)")
+						+ "\n"
 						+ "  natural spawn entry: weight " + config.spawnWeight
 						+ (jungle && config.skipJungles ? " - skipped in jungles" : "") + "\n"
 						+ "  spawn rules here: " + denial.message() + " (light " + light + ")\n"
