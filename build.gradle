@@ -34,7 +34,7 @@ dependencies {
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	// Mod Menu's API, compile-time only: the config screen is optional and the mod runs without it.
-	clientCompileOnly "maven.modrinth:modmenu:20.0.2"
+	clientCompileOnly "maven.modrinth:modmenu:21.0.0"
 }
 
 processResources {
