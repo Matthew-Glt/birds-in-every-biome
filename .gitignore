@@ -43,6 +43,7 @@ replay_*.log
 
 build.log
 build-run.log
+modrinth-run.log
 tasks.txt
 
 # extracted Mojang assets and generated previews - do not redistribute or ship
