@@ -2,7 +2,7 @@
 
 Parrots that spawn everywhere — and pick up the colour of the biome they were born in.
 
-A Fabric mod for **Minecraft 26.2**. Vanilla only spawns parrots in jungles, on grass or leaves.
+A Fabric mod for **Minecraft 26.3**. Vanilla only spawns parrots in jungles, on grass or leaves.
 This mod opens them up to every biome, relaxes the spawn surface to "any solid floor", and gives six
 regions their own plumage: a desert parrot is sand-coloured, a snowy one is white-blue, and the Nether
 and the End hatch variants of their own. The variant is rolled once, when the parrot spawns, and then
@@ -10,7 +10,7 @@ saved with it forever.
 
 | | |
 |---|---|
-| **Minecraft** | 26.2 |
+| **Minecraft** | 26.3 |
 | **Loader** | Fabric Loader 0.19.5+ |
 | **Requires** | Fabric API, Java 25 |
 | **Environment** | Client and server (single-player, LAN and dedicated servers) |
@@ -36,7 +36,7 @@ saved with it forever.
 
 ## Features
 
-- **Parrots spawn in every biome.** 63 of the 66 biomes get a parrot spawn entry. Jungles keep
+- **Parrots spawn in every biome.** 64 of the 67 biomes get a parrot spawn entry. Jungles keep
   vanilla's own entry instead of gaining a second one.
 - **Any solid floor counts.** Sand, snow, stone, netherrack, end stone — the vanilla "grass, leaves or
   logs only" rule is replaced by "something solid below, somewhere to stand, no fluid". Outside the
@@ -64,14 +64,14 @@ saved with it forever.
 
 **From Modrinth (recommended)**
 
-1. Install [Fabric Loader 0.19.5+](https://fabricmc.net/use/installer/) for Minecraft 26.2.
+1. Install [Fabric Loader 0.19.5+](https://fabricmc.net/use/installer/) for Minecraft 26.3.
 2. Add [Fabric API](https://modrinth.com/mod/fabric-api) and **Birds in Every Biome** to your mods.
    In the Modrinth App: search for the mod, **Install**, pick an instance that already has Fabric API.
 
 **By hand**
 
-1. Install Fabric Loader 0.19.5+ for Minecraft 26.2.
-2. Put `birds-in-every-biome-<version>.jar` **and** `fabric-api-0.161.0+26.2.jar` in your `mods`
+1. Install Fabric Loader 0.19.5+ for Minecraft 26.3.
+2. Put `birds-in-every-biome-<version>.jar` **and** `fabric-api-0.161.0+26.3.jar` in your `mods`
    folder (`%APPDATA%\.minecraft\mods` on Windows, `~/.minecraft/mods` on Linux/macOS).
 3. Launch the Fabric profile.
 
@@ -184,7 +184,7 @@ Birds in Every Biome - position check at 118, 64, -232
 
 | Document | Contents |
 |---|---|
-| [`docs/TECHNICAL.md`](docs/TECHNICAL.md) | Architecture, the two spawn paths, entity data and NBT, client rendering, config plumbing, how to add a skin, 26.2 API notes, and how to test a change. |
+| [`docs/TECHNICAL.md`](docs/TECHNICAL.md) | Architecture, the two spawn paths, entity data and NBT, client rendering, config plumbing, how to add a skin, 26.x API notes, and how to test a change. |
 | [`docs/TEXTURES.md`](docs/TEXTURES.md) | The 32×32 parrot texture spec: UV layout, colour roles, the generator script, the resource-pack hot-reload loop, and the licensing note about Mojang art. |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release notes. |
 

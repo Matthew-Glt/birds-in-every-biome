@@ -19,6 +19,7 @@ public final class VanillaBiomes {
 			"minecraft:cherry_grove",
 			"minecraft:cold_ocean",
 			"minecraft:crimson_forest",
+			"minecraft:dappled_forest",
 			"minecraft:dark_forest",
 			"minecraft:deep_cold_ocean",
 			"minecraft:deep_dark",

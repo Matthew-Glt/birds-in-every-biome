@@ -2,7 +2,7 @@
 
 How *Birds in Every Biome* is put together, what each class does, why the awkward parts are awkward,
 and where to extend it. Everything below is written against the source in this repository for
-**Minecraft 26.2 / Fabric Loader 0.19.5 / Fabric API 0.161.0+26.2 / Java 25**.
+**Minecraft 26.3 / Fabric Loader 0.19.5 / Fabric API 0.161.0+26.3 / Java 25**.
 
 ---
 
@@ -194,7 +194,7 @@ when a world is loaded, plus anything already in `disabledBiomes` — so a biome
 can always be switched back on, even if it is not present in the current world.
 
 `VanillaBiomes` exists because biomes are a **dynamic** registry: at the main menu the client has no
-biome registry at all (`BuiltInRegistries` has no `BIOME` entry in 26.2), so a hardcoded list of the
+biome registry at all (`BuiltInRegistries` has no `BIOME` entry in 26.3), so a hardcoded list of the
 vanilla ids is the only way to offer the toggles before a world is loaded.
 
 ## Per-biome spawn weights
@@ -239,9 +239,9 @@ so a hand-edited file can never break the game.
 No mixin or registration changes are needed: the skin index, NBT name and texture path all flow from
 `SKIN_NAMES`.
 
-## Minecraft 26.2 API notes
+## Minecraft 26.x API notes
 
-Written against the 26.2 client jar, because 26.x renamed a lot of the 1.21 surface:
+Written against the 26.3 client jar, because 26.x renamed a lot of the 1.21 surface:
 
 - `ResourceLocation` → `Identifier` (`net.minecraft.resources`).
 - `EntityType.PARROT` → `EntityTypes.PARROT` (holder-style registry class).
@@ -296,9 +296,10 @@ and the icon. Mod Menu is `clientCompileOnly` (never bundled), and `build.gradle
 `LICENSE` to `LICENSE_birds-in-every-biome` and embeds it. `tools/` — including the extracted vanilla
 texture and the generated previews — is development material and is not packaged.
 
-`libs/modmenu-20.0.2.jar` is Mod Menu's own jar, kept in the repository because the config screen is
-compiled against its API (`ModMenuApi`, `ConfigScreenFactory`) while Mod Menu itself stays an optional
-runtime dependency — it is never bundled into the mod jar. Mod Menu is MIT-licensed.
+Mod Menu is a compile-time-only dependency of the config screen, resolved from the Modrinth maven
+(`maven.modrinth:modmenu:21.0.0` in `build.gradle`) because the screen is compiled against its API
+(`ModMenuApi`, `ConfigScreenFactory`) while Mod Menu itself stays an optional runtime dependency — it
+is never bundled into the mod jar. Mod Menu is MIT-licensed.
 
 The extracted vanilla texture in `tools/vanilla/` is Mojang art, so it is deliberately kept out of
 version control and out of the distributed jar.

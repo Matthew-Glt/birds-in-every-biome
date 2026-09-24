@@ -27,8 +27,8 @@ retune — that is the quickest way to iterate.
 Doing it by hand:
 
 ```powershell
-Copy-Item "$env:APPDATA\.minecraft\versions\26.2\26.2.jar" "$env:TEMP\26.2.zip" -Force
-Expand-Archive "$env:TEMP\26.2.zip" "$env:TEMP\mc26" -Force
+Copy-Item "$env:APPDATA\.minecraft\versions\26.3\26.3.jar" "$env:TEMP\26.3.zip" -Force
+Expand-Archive "$env:TEMP\26.3.zip" "$env:TEMP\mc26" -Force
 Copy-Item "$env:TEMP\mc26\assets\minecraft\textures\entity\parrot\parrot_red_blue.png" `
           "src\main\resources\assets\birdsineverybiome\textures\entity\parrot\parrot_yourskin.png"
 ```
@@ -38,7 +38,7 @@ blue wing/tail), which is what a biome variant wants.
 
 ## What lives where on the 32×32 canvas
 
-Straight from `ParrotModel` in 26.2:
+Straight from `ParrotModel` in 26.3:
 
 | Pixels (x, y) | Size | Part |
 |---|---|---|

@@ -9,7 +9,7 @@ of their own. The variant is rolled once, when the parrot spawns, and then saved
 
 | | |
 |---|---|
-| **Minecraft** | 26.2 |
+| **Minecraft** | 26.3 |
 | **Loader** | Fabric Loader 0.19.5+ |
 | **Requires** | [Fabric API](https://modrinth.com/mod/fabric-api) and Java 25 |
 | **Environment** | Client and server — single-player, LAN and dedicated servers |
@@ -20,7 +20,7 @@ of their own. The variant is rolled once, when the parrot spawns, and then saved
 
 ## What it does
 
-- **Parrots spawn in every biome.** 63 of the 66 biomes get a parrot spawn entry. Jungles keep
+- **Parrots spawn in every biome.** 64 of the 67 biomes get a parrot spawn entry. Jungles keep
   vanilla's own entry instead of gaining a second one.
 - **Any solid floor counts.** Sand, snow, stone, netherrack, end stone — the vanilla
   "grass, leaves or logs only" rule is replaced by "something solid below, somewhere to stand, no
@@ -57,7 +57,7 @@ of their own. The variant is rolled once, when the parrot spawns, and then saved
 
 ## Install
 
-1. Install **Fabric Loader 0.19.5+** for **Minecraft 26.2**.
+1. Install **Fabric Loader 0.19.5+** for **Minecraft 26.3**.
 2. Add [Fabric API](https://modrinth.com/mod/fabric-api) and this mod to your `mods` folder — the
    Modrinth App does it for you if you pick an instance that already has Fabric API.
 3. Launch. Existing worlds work: parrots that never had a skin get one the first time their chunk
