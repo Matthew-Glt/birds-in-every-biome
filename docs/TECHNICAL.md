@@ -172,8 +172,8 @@ Vanilla puts a parrot on a player's shoulder by deleting the parrot entity and s
 `config/birds-in-every-biome.json` is written on first launch (Gson with pretty printing — no extra
 dependency). `BirdsConfig.load()`:
 
-- if `birds-in-every-biome.json` is missing, falls back to the legacy `biome-parrots.json` (the mod's
-  earlier name) and immediately saves it under the new name;
+- if `birds-in-every-biome.json` is missing, the legacy `biome-parrots.json` name is checked and its
+  values are migrated into the current file;
 - clamps values into sane ranges (`spawnWeight ≥ 0`, `minGroupSize ≥ 1`,
   `maxGroupSize ≥ minGroupSize`, `flockDelaySeconds ≥ 5`, `maxBirdsNearby ≥ 1`);
 - falls back to defaults (and logs a warning) if the file cannot be read or parsed.
@@ -215,11 +215,10 @@ Written against the 26.2 client jar, because 26.x renamed a lot of the 1.21 surf
   shoulder-riding base class.
 - Building requires **Java 25** (Loom 1.17, `options.release = 25`).
 
-## Verifying a change
+## Testing a change
 
-A green build proves the code compiles; it does **not** prove a mixin target exists, because Loom runs
-no Mixin annotation processor on 26.x. A misspelled method name in `@Inject` compiles cleanly and only
-fails at runtime.
+Mixin injection points are validated at runtime, not at compile time: a typo in an `@Inject` target
+still compiles, and the game reports the failure when it loads. Read the log, not just the build.
 
 1. `./gradlew build` — must end in `BUILD SUCCESSFUL`, producing
    `build/libs/birds-in-every-biome-<version>.jar` and the `-sources.jar`.
@@ -246,11 +245,12 @@ Textures can be iterated without rebuilding by using a resource pack that overri
 The mod jar contains only this mod: classes, mixin configs, `fabric.mod.json`, the variant textures
 and the icon. Mod Menu is `clientCompileOnly` (never bundled), and `build.gradle`'s `jar` task renames
 `LICENSE` to `LICENSE_birds-in-every-biome` and embeds it. `tools/` — including the extracted vanilla
-texture and the preview images — is scratch material, is git-ignored, and is not packaged.
+texture and the generated previews — is development material and is not packaged.
 
 `libs/modmenu-20.0.2.jar` is Mod Menu's own jar, kept in the repository because the config screen is
 compiled against its API (`ModMenuApi`, `ConfigScreenFactory`) while Mod Menu itself stays an optional
-runtime dependency — it is never bundled into the mod jar. Mod Menu is MIT-licensed. The `tools/`
-exclusions and the extracted `tools/vanilla/` texture are deliberate: that directory holds Mojang art
-and must not be committed or shipped.
+runtime dependency — it is never bundled into the mod jar. Mod Menu is MIT-licensed.
+
+The extracted vanilla texture in `tools/vanilla/` is Mojang art, so it is deliberately kept out of
+version control and out of the distributed jar.
 

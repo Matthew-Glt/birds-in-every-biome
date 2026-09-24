@@ -105,5 +105,5 @@ If you want a build that is unambiguously yours:
 2. ship the generator instead — `tools/make_textures.py` stays in the repository and lets anyone
    produce the variants from their own game files.
 
-`tools/vanilla/`, `tools/preview.png` and `tools/texture-guide.png` are local scratch files and are
+`tools/vanilla/`, `tools/preview.png` and `tools/texture-guide.png` are development files and are
 not part of the mod jar either way.

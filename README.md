@@ -4,7 +4,7 @@ Parrots that spawn everywhere — and pick up the colour of the biome they were 
 
 A Fabric mod for **Minecraft 26.2**. Vanilla only spawns parrots in jungles, on grass or leaves.
 This mod opens them up to every biome, relaxes the spawn surface to "any solid floor", and gives six
-biomes their own plumage: a desert parrot is sand-coloured, a snowy one is white-blue, and the Nether
+regions their own plumage: a desert parrot is sand-coloured, a snowy one is white-blue, and the Nether
 and the End hatch variants of their own. The variant is rolled once, when the parrot spawns, and then
 saved with it forever.
 
@@ -13,7 +13,7 @@ saved with it forever.
 | **Minecraft** | 26.2 |
 | **Loader** | Fabric Loader 0.19.5+ |
 | **Requires** | Fabric API, Java 25 |
-| **Environment** | Client and server (works in single-player, on LAN and on dedicated servers) |
+| **Environment** | Client and server (single-player, LAN and dedicated servers) |
 | **Optional** | [Mod Menu](https://modrinth.com/mod/modmenu) — adds an in-game config screen |
 | **License** | MIT |
 
@@ -55,8 +55,8 @@ saved with it forever.
   that drops small groups of parrots near players, using the same rules as the natural entry.
 - **`/birds` diagnostics.** Ask why a bird would or wouldn't spawn where you're standing, or force a
   flock attempt and read exactly what happened.
-- **Client-only clients and vanilla clients both work.** A vanilla client on a modded server still
-  sees parrots — just in the normal five colours, since it doesn't know the skin data.
+- **Works with vanilla clients.** Players without the mod still see parrots on a modded server — in
+  the normal five colours, since their client doesn't know the skin data.
 
 ## Install
 
@@ -177,7 +177,7 @@ Spawn lists are built at world load, so a change needs a world reload before it 
 | Command | What it does |
 |---|---|
 | `/birds check` | Biome, the skin a parrot would get there, whether the spawn rules pass at your feet (with the light level), how many parrots are nearby, and the state of the flock spawner. |
-| `/birds spawn` | Force one flock attempt right now and report exactly what happened — spawned, rejected and why, or no loaded chunk in range. |
+| `/birds spawn` | Force one flock attempt immediately and report the outcome — spawned, rejected and why, or no loaded chunk in range. |
 
 Example:
 
@@ -196,8 +196,8 @@ Birds in Every Biome - position check at 118, 64, -232
 
 - **No ocean or river spawns.** Their surface is water, which has no collision shape, so it never
   counts as a floor. Same reason there are no mid-air spawns.
-- **Flocks ignore the `doMobSpawning` game rule** (the gamerule API moved in 26.2). Set
-  `"flockEnabled": false` to stop them.
+- **Flocks are not gated by the `doMobSpawning` game rule.** Set `"flockEnabled": false` to stop
+  them.
 - **Flocks spawn 32+ blocks away**, so a bird can occasionally appear at the edge of your view.
 - **The small rainbow patch** in the bottom-right of the vanilla parrot texture is leftover canvas
   art — no model part samples it, so it never shows in game.
@@ -210,7 +210,7 @@ Birds in Every Biome - position check at 118, 64, -232
 
 | Document | Contents |
 |---|---|
-| [`docs/TECHNICAL.md`](docs/TECHNICAL.md) | Architecture, the two spawn paths, entity data and NBT, client rendering, config plumbing, how to add a skin, 26.2 API notes, how to verify a build. |
+| [`docs/TECHNICAL.md`](docs/TECHNICAL.md) | Architecture, the two spawn paths, entity data and NBT, client rendering, config plumbing, how to add a skin, 26.2 API notes, and how to test a change. |
 | [`docs/TEXTURES.md`](docs/TEXTURES.md) | The 32×32 parrot texture spec: UV layout, colour roles, the generator script, the resource-pack hot-reload loop, and the licensing note about Mojang art. |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release notes. |
 
@@ -226,14 +226,13 @@ cd birds-in-every-biome
 ./gradlew runServer      # dev server
 ```
 
-On Windows with several JDKs installed, Gradle can pick the wrong one. This project pins the build
-JVM itself in `gradle/gradle-daemon-jvm.properties` (`toolchainVersion=25`) — so make sure a JDK 25
-is installed, and if Gradle still picks a different JDK, set `JAVA_HOME` for the launcher before
-calling the wrapper. The two helper scripts in the repository root do that explicitly:
+The build JVM is pinned in `gradle/gradle-daemon-jvm.properties` (`toolchainVersion=25`), so a JDK 25
+has to be installed. If Gradle picks a different JDK anyway, set `JAVA_HOME` before calling the
+wrapper. Two Windows helper scripts are included that do this for you:
 
 ```powershell
-.\build.ps1        # sets JAVA_HOME, then gradlew build
-.\runclient.ps1    # sets JAVA_HOME, then gradlew runClient
+.\build.ps1        # jar -> build\libs\
+.\runclient.ps1    # dev client with the mod loaded
 ```
 
 The build also produces a `-sources.jar`, and embeds `LICENSE` into the mod jar.
@@ -252,7 +251,7 @@ The build also produces a `-sources.jar`, and embeds `LICENSE` into the mod jar.
   `finalizeSpawn` assign their skin.
 - `BirdsCommand` — `/birds check` and `/birds spawn`.
 - `BirdsConfig` — reads and writes `config/birds-in-every-biome.json` with Gson (no extra
-  dependency), including a fallback for the mod's old `biome-parrots.json` file name.
+  dependency), including migration of legacy config file names.
 - Client mixins — `ParrotRendererMixin` and `ParrotOnShoulderLayerMixin` swap the texture in
   `getTextureLocation` / the shoulder layer's variant lookup, reading the skin out of the render
   state. `AvatarRendererMixin`, `AvatarRenderStateMixin` and `PlayerMixin` carry the shoulder parrot's

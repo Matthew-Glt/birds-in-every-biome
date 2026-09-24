@@ -126,8 +126,8 @@ in command blocks.
 
 - **No ocean or river spawns.** Their surface is water, which has no collision shape, so it never
   counts as a floor. Same reason there are no mid-air spawns.
-- **Flocks ignore the `doMobSpawning` game rule** (the gamerule API moved in 26.2). Set
-  `"flockEnabled": false` to turn them off.
+- **Flocks are not gated by the `doMobSpawning` game rule.** Set `"flockEnabled": false` to stop
+  them.
 - **Flocks spawn 32+ blocks away**, so a bird can occasionally appear at the edge of your view.
 - **Adding a parrot entry to every biome** increases creature spawn pressure slightly; lower
   `spawnWeight`, or set it to `0`, if a world feels overrun with birds.
