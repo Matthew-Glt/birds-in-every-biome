@@ -30,8 +30,9 @@ of their own. The variant is rolled once, when the parrot spawns, and then saved
   `nether` and `end`. The skin is decided by the biome the parrot spawns in and stored on the entity,
   so a bird that wanders into another biome keeps the look it was born with.
 - **Shoulder parrots keep their skin too** — on your shoulder and on every other player's screen.
-- **A spawner that actually fires.** See below: a spawn entry alone changes almost nothing in an
-  explored world.
+- **A spawner that actually fires.** Small groups of parrots are placed near players on a timer,
+  using the same spawn rules as the natural entry, so birds show up in worlds you have already
+  explored and not only in freshly generated terrain.
 - **Everything is configurable** without rebuilding: spawn weight, group sizes, jungle handling,
   flock timing and a nearby-bird cap, in `config/birds-in-every-biome.json` or from the Mod Menu
   config screen.
@@ -99,25 +100,6 @@ Spawn-rate changes apply the next time a world loads — biome spawn lists are b
 **Restore defaults**, and a **Biome toggles** page with an on/off switch per biome (seven per page,
 plus **Enable all** / **Disable all**). It is built from vanilla widgets, so Cloth Config is not
 required.
-
-## Why a high spawn weight alone does nothing
-
-This is the part most "parrots everywhere" mods get wrong, so it is worth two minutes:
-
-`spawnWeight` feeds vanilla's own passive-mob spawner, and that spawner has two hard limits. Friendly
-mobs only get a spawn attempt **once every 400 ticks (20 seconds)**, and it only runs while the
-**creature cap** has room — roughly 10-15 creatures in the loaded area, already occupied by the
-animals that were generated with the world. Passive mobs never despawn, so in terrain you have
-already explored, the cap stays full and **no new animal ever spawns**, parrots included.
-
-That is why you can set the weight to 50 and still see nothing: the entry is there (`/birds check`
-prints it), the vanilla spawner just never fires. It does work in freshly generated chunks and in
-brand-new worlds.
-
-So this mod also runs a **flock spawner**: every `flockDelaySeconds` it picks a random surface spot
-32-56 blocks from each player, applies the *exact same* spawn rules, and adds `minGroupSize`-
-`maxGroupSize` parrots there — stopping once `maxBirdsNearby` parrots are within 64 blocks. That is
-the bird population you will actually notice while playing.
 
 ## Commands
 

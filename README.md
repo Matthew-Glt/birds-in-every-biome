@@ -25,7 +25,6 @@ saved with it forever.
 - [Install](#install)
 - [Biome → look](#biome--look)
 - [Configuration](#configuration)
-- [Why a high spawn weight alone does nothing](#why-a-high-spawn-weight-alone-does-nothing)
 - [Commands](#commands)
 - [Known behaviour and limits](#known-behaviour-and-limits)
 - [Documentation](#documentation)
@@ -53,9 +52,9 @@ saved with it forever.
 - **Per-biome control.** Every biome has an on/off toggle in the config screen (or an entry in
   `disabledBiomes`), so birds can be kept out of oceans, deserts, or anywhere else — both the natural
   spawn entry and the flocks respect it.
-- **A spawner that actually fires.** Vanilla's passive spawner is throttled and cap-limited, so a
-  spawn entry alone changes nothing in an explored world. The mod ships an independent flock spawner
-  that drops small groups of parrots near players, using the same rules as the natural entry.
+- **A spawner that actually fires.** Small groups of parrots are placed near players on a timer,
+  using the same spawn rules as the natural entry, so birds show up in worlds you have already
+  explored and not only in freshly generated terrain.
 - **`/birds` diagnostics.** Ask why a bird would or wouldn't spawn where you're standing, or force a
   flock attempt and read exactly what happened.
 - **Works with vanilla clients.** Players without the mod still see parrots on a modded server — in
@@ -76,9 +75,8 @@ saved with it forever.
    folder (`%APPDATA%\.minecraft\mods` on Windows, `~/.minecraft/mods` on Linux/macOS).
 3. Launch the Fabric profile.
 
-Existing worlds work. Parrots that never had a skin get one the first time their chunk loads after
-the mod is added; parrots that already had one keep it, because the skin is saved by name rather than
-by index.
+Existing worlds work: parrots that never had a skin get one the first time their chunk loads after the
+mod is added, and birds that already have one keep it.
 
 **On a server:** install on the server for the spawning behaviour, and on clients that want the new
 textures. Nothing breaks if only one side has it.
@@ -146,40 +144,6 @@ biome the loaded world knows about, so datapack and modded biomes appear there t
 Spawn-rate and biome changes apply **the next time the world loads**: biome spawn lists are baked at
 world load, so restart the world or the game after saving.
 
-## Why a high spawn weight alone does nothing
-
-`spawnWeight` feeds vanilla's own passive-mob spawner, and that spawner has two hard limits:
-
-- friendly mobs only get a spawn attempt **once every 400 ticks (20 seconds)**, and
-- it only runs while the **creature cap** has room — roughly 10–15 creatures for the loaded area, and
-  those slots are taken by the animals that were generated together with the world.
-
-Passive mobs never despawn, so in terrain you have already explored the cap stays full and **no new
-animal ever spawns**, parrots included. That is why you can set the weight to 50 and still see
-nothing: the entry is there (`/birds check` prints it), the spawner just never fires. The natural
-entry does work in freshly generated chunks and in brand-new worlds.
-
-So the mod also runs a **flock spawner**: every `flockDelaySeconds` it picks a random surface spot
-32–56 blocks from each player, applies the exact same spawn rules, and adds `minGroupSize`–`maxGroupSize`
-parrots there, stopping once `maxBirdsNearby` parrots are within 64 blocks. That is the bird
-population you will notice in normal play.
-
-The mechanic is documented in more detail — including the unloaded-chunk trap it has to dodge — in
-[`docs/TECHNICAL.md`](docs/TECHNICAL.md#the-flock-spawner).
-
-### Per-biome tuning
-
-To give one biome its own weight on top of the global entry, add a line to
-`BirdsInEveryBiome.onInitialize`:
-
-```java
-// lots of parrots in badlands, on top of the global entry
-BiomeModifications.addSpawn(BiomeSelectors.tag(BiomeTags.IS_BADLANDS), MobCategory.CREATURE,
-        EntityTypes.PARROT, 20, 2, 4);
-```
-
-Spawn lists are built at world load, so a change needs a world reload before it shows up.
-
 ## Commands
 
 `/birds` requires gamemaster (permission level 2) and works in single-player and on a server console.
@@ -205,8 +169,8 @@ Birds in Every Biome - position check at 118, 64, -232
 
 ## Known behaviour and limits
 
-- **No ocean or river spawns.** Their surface is water, which has no collision shape, so it never
-  counts as a floor. Same reason there are no mid-air spawns.
+- **No ocean, river or mid-air spawns.** Parrots need a solid block under them, and water and air are
+  not solid.
 - **Flocks are not gated by the `doMobSpawning` game rule.** Set `"flockEnabled": false` to stop
   them.
 - **Flocks spawn 32+ blocks away**, so a bird can occasionally appear at the edge of your view.
@@ -214,8 +178,7 @@ Birds in Every Biome - position check at 118, 64, -232
   art — no model part samples it, so it never shows in game.
 - **Adding a parrot entry to every biome** increases creature spawn pressure slightly; lower
   `spawnWeight` (or set it to `0`) if a world feels overrun with birds.
-- The Nether and the End have no daylight cycle, so a "day" there is irrelevant to spawns: the light
-  rule is skipped entirely rather than faked.
+- The light-level rule does not apply in the Nether or the End.
 
 ## Documentation
 
@@ -250,23 +213,13 @@ The build also produces a `-sources.jar`, and embeds `LICENSE` into the mod jar.
 
 ## How it works
 
-- `BirdsInEveryBiome` — Fabric's `BiomeModifications.addSpawn` adds one parrot spawn entry per biome
-  (jungles skipped by default, since vanilla already has one there).
-- `ParrotSpawnRules` — the relaxed spawn check: solid floor below, no block in the way, no fluid, and
-  vanilla's `light > 8` rule in the Overworld only. Injected into `Parrot.checkParrotSpawnRules`.
-- `ParrotMixin` — one extra synced entity-data field (`birdsineverybiome:skin`, an index into
-  `ParrotSkins.SKIN_NAMES`). Assigned once from the spawn biome, saved to NBT **by name** (so
-  reordering the skin list never breaks existing parrots) and synced to clients.
-- `FlockSpawner` / `BirdSpawner` — the independent spawner: pick a surface spot 32–56 blocks out,
-  throw away candidates in unloaded chunks, run the same rules, then create real parrots and let
-  `finalizeSpawn` assign their skin.
-- `BirdsCommand` — `/birds check` and `/birds spawn`.
-- `BirdsConfig` — reads and writes `config/birds-in-every-biome.json` with Gson (no extra
-  dependency), including migration of legacy config file names and the per-biome allow list.
-- Client mixins — `ParrotRendererMixin` and `ParrotOnShoulderLayerMixin` swap the texture in
-  `getTextureLocation` / the shoulder layer's variant lookup, reading the skin out of the render
-  state. `AvatarRendererMixin`, `AvatarRenderStateMixin` and `PlayerMixin` carry the shoulder parrot's
-  skin from the entity to the player model on every client.
+Parrots get a spawn entry in every biome through Fabric's `BiomeModifications`, a relaxed spawn check
+that accepts any solid floor, and one synced entity-data field carrying the biome skin — saved by
+name, so reordering the skin list never changes an existing bird. An independent flock spawner places
+small groups near players, using the same rules as the natural entry.
+
+Implementation notes, the client rendering path and extension recipes (adding a skin, per-biome spawn
+weights) are in [`docs/TECHNICAL.md`](docs/TECHNICAL.md).
 
 ## Credits
 

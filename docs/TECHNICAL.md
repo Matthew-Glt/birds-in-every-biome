@@ -197,6 +197,19 @@ can always be switched back on, even if it is not present in the current world.
 biome registry at all (`BuiltInRegistries` has no `BIOME` entry in 26.2), so a hardcoded list of the
 vanilla ids is the only way to offer the toggles before a world is loaded.
 
+## Per-biome spawn weights
+
+The toggles are on/off. For a different *weight* in one biome, add your own entry next to the global
+one in `BirdsInEveryBiome.onInitialize`:
+
+```java
+// lots of parrots in badlands, on top of the global entry
+BiomeModifications.addSpawn(BiomeSelectors.tag(BiomeTags.IS_BADLANDS), MobCategory.CREATURE,
+        EntityTypes.PARROT, 20, 2, 4);
+```
+
+Spawn lists are built at world load, so a change needs a world reload before it shows up.
+
 ## Config file
 
 `config/birds-in-every-biome.json` is written on first launch (Gson with pretty printing — no extra
